@@ -117,3 +117,23 @@
 .repl-word {
   color: red;
 }
+
+#sultanbros {
+  line-height: 20px;
+  color: yellow;
+  color: white;
+  background: black;
+  /* border:solid; */
+  background: red;
+  border-color: orange;
+  background: brown;
+  color: white;
+  background: rgb(103, 60, 6);
+  border-radius: 10px;
+  padding: 0px 4px;
+  font-weight: 600;
+  background: white;
+  border-color: rgb(0, 73, 128);
+  color: rgb(0, 73, 128);
+  cursor:pointer;
+}
