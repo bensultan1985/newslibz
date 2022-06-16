@@ -34,23 +34,23 @@ let replWordList = {
         pos: 'adverb' + advExample,
         rule: 'addbefore'
     },
-    "twitter": {
+    "Twitter": {
         pos: 'app name (e.g. Angry Birds)',
         rule: 'bas'
     },
-    "facebook": {
+    "Facebook": {
         pos: 'app name (e.g. Angry Birds)',
         rule: 'bas'
     },
-    "snapchat": {
+    "Snapchat": {
         pos: 'app name (e.g. Angry Birds)',
         rule: 'bas'
     },
-    "instagram": {
+    "Instagram": {
         pos: 'app name (e.g. Angry Birds)',
         rule: 'bas'
     },
-    "tiktok": {
+    "TikTok": {
         pos: 'app name (e.g. Angry Birds)',
         rule: 'bas'
     },
@@ -209,5 +209,37 @@ let replWordList = {
     "americans": {
         pos: 'animal (plural)',
         rule: 'bas'
+    },
+    "laptop": {
+        pos: 'noun',
+        rule: 'bas'
+    },
+    "ballots": {
+        pos: 'noun (plural)',
+        rule: 'bas'
+    },
+    "gas": {
+        pos: 'noun',
+        rule: 'bas'
+    },
+    "cryptocurrency": {
+        pos: 'commodity (e.g. eggs, comic books)',
+        rule: 'bas'
+    },
+    "old": {
+        pos: 'adjective' + adjExample,
+        rule: 'bas'
+    },
+    "young": {
+        pos: 'adjective' + adjExample,
+        rule: 'bas'
+    },
+    "broken": {
+        pos: 'adjective' + adjExample,
+        rule: 'bas'
+    },
+    "Sen.": {
+        pos: 'adjective' + adjExample,
+        rule: 'addbefore'
     }
 }
