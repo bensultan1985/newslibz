@@ -4,18 +4,18 @@ NewsLibz v 2.0.0.0
 1. articleDetails object contains all necessary variables.
 2. articleDetails.replWordsList lists all words to be replaced and stores the replacement words.
 /////////////////////////*/
-
 let timesData = {};
 let count = 0;
 let submit = document.getElementById("submit");
-let headline = '';
+let headline = "";
 let pageCount = 0;
 let firstLib = true;
 let listOfReplaced = [];
 let elementCount = 0;
-let newArticle = '';
+let newArticle = "";
 let articleDetails = {};
-let punctuationExceptions = /(((?:a\.d|a\.m|abbr|adj|adv|al|assn|ave|c|c\.v|ca|dept|dr|e\.g|est|etc|fig|gen|hon|hrs|i\.e|inc|jr|mr|mrs|ms|mt|no|obj|oz|p\.a|p\.m|p\.s|pl|poss|prep|prof|pron|pseud|r\.i\.p|rev|sing|sq|sr|st|stat|syn|trans|v|vb|vs))\.|[,;:!?])$/;
+let punctuationExceptions =
+  /(((?:a\.d|a\.m|abbr|adj|adv|al|assn|ave|c|c\.v|ca|dept|dr|e\.g|est|etc|fig|gen|hon|hrs|i\.e|inc|jr|mr|mrs|ms|mt|no|obj|oz|p\.a|p\.m|p\.s|pl|poss|prep|prof|pron|pseud|r\.i\.p|rev|sing|sq|sr|st|stat|syn|trans|v|vb|vs))\.|[,;:!?])$/;
 //special conditions
 //['election', 'award ceremony name', 'bas'] add in later
 //detect two articles (a, an, the) in a row
@@ -25,90 +25,97 @@ let punctuationExceptions = /(((?:a\.d|a\.m|abbr|adj|adv|al|assn|ave|c|c\.v|ca|d
 // let response = fetch(url).then(response => res.json()).then(data => console.log(data));
 // console.log(response);
 // headline = object.response.docs[count].headline.main;
-// discoverReplacements(object.response.docs[count].lead_paragraph);
+// discoverReplacements(object.response.docs[count].snippet);
 const newLibs = () => {
-  if (pageCount == 20) pageCount = 0; 
+  if (pageCount == 20) pageCount = 0;
   (async () => {
     timesData = {};
-    const rawResponse = await fetch('/nytimes', {
-      method: 'POST',
+
+    const rawResponse = await fetch("/nytimes", {
+      method: "POST",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({'pagecount': pageCount})
+      body: JSON.stringify({ pagecount: pageCount }),
     });
     pageCount++;
     timesData = await rawResponse.json(); // read response body and parse as JSON
-  headline = timesData.response.docs[count].headline.main;
-  discoverReplacements(timesData.response.docs[count].lead_paragraph, articleDetails.headline = timesData.response.docs[count].headline.main);
+    headline = timesData.response.docs[count].headline.main;
+    discoverReplacements(
+      timesData.response.docs[count].snippet,
+      (articleDetails.headline = timesData.response.docs[count].headline.main)
+    );
   })();
 };
 
 //part 1: discover words to be replaced
 const discoverReplacements = (article, headline) => {
   listOfReplaced = [];
-  spacedArticle = article.split(' ');
+  spacedArticle = article.split(" ");
   articleDetails.ogArticle = article;
   articleDetails.spacedArticle = spacedArticle;
   articleDetails.replWordList = {};
   articleDetails.count = 0;
   articleDetails.headline = headline;
-  spacedArticle.forEach(word => {
+  spacedArticle.forEach((word) => {
     let lWord = word.toLowerCase();
     let match = lWord.match(punctuationExceptions);
+    console.log(lWord);
     if (match) {
       lWord = lWord.slice(0, -1);
-    };
-    if (replWordList[lWord] && !articleDetails.replWordList[lWord]) {
-      articleDetails.replWordList[lWord] = replWordList[lWord];
-      articleDetails.count++
-    };
-  });
-  articleDetails.headline.split(' ').forEach(word => {
-    let lWord = word.toLowerCase();
-    let match = lWord.match(punctuationExceptions);
-    if (match) {
-      lWord = lWord.slice(0, -1);
-    };
+    }
     if (replWordList[lWord] && !articleDetails.replWordList[lWord]) {
       articleDetails.replWordList[lWord] = replWordList[lWord];
       articleDetails.count++;
-    };
+    }
+  });
+  articleDetails.headline.split(" ").forEach((word) => {
+    let lWord = word.toLowerCase();
+    let match = lWord.match(punctuationExceptions);
+    if (match) {
+      lWord = lWord.slice(0, -1);
+    }
+    if (replWordList[lWord] && !articleDetails.replWordList[lWord]) {
+      articleDetails.replWordList[lWord] = replWordList[lWord];
+      articleDetails.count++;
+    }
   });
   if (articleDetails.count > 2) {
     addElement(articleDetails);
   } else {
     nextLib();
-  };
+  }
 };
 
 // part 2: create form boxes for user
-function addElement (articleDetails) {
-  document.getElementById("formarea").innerHTML = '';
+function addElement(articleDetails) {
+  document.getElementById("formarea").innerHTML = "";
   elementCount = 0;
-  for (key in articleDetails.replWordList) { 
-    let box = document.createElement('input');
+  for (key in articleDetails.replWordList) {
+    let box = document.createElement("input");
     box.id = "ID" + elementCount;
     box.type = "text";
     box.className = "formbox";
     box.placeholder = articleDetails.replWordList[key].pos;
-    box.setAttribute("ogWord", key)
+    box.setAttribute("ogWord", key);
     document.getElementById("formarea").append(box);
     elementCount++;
-  };
-  submit.style.visibility = 'visible';
-};
+  }
+  submit.style.visibility = "visible";
+}
 //discoverReplacements(article)
 
 //part 3: new words are received
 const pushElements = () => {
-  let formElements = document.getElementsByClassName('formbox');
+  let formElements = document.getElementsByClassName("formbox");
   for (let i = 0; i < formElements.length; i++) {
-    articleDetails.replWordList[formElements[i].getAttribute("ogWord")].replacement = formElements[i].value;
-  };
+    articleDetails.replWordList[
+      formElements[i].getAttribute("ogWord")
+    ].replacement = formElements[i].value;
+  }
   var art = replaceWords(articleDetails.spacedArticle);
-  var head = replaceWords(articleDetails.headline.split(' ')).join(' ');
+  var head = replaceWords(articleDetails.headline.split(" ")).join(" ");
   return newzLib(art, head);
 };
 
@@ -116,22 +123,30 @@ const pushElements = () => {
 const replaceWords = (spacedWords) => {
   for (let i = 0; i < spacedWords.length; i++) {
     lWord = spacedWords[i].toLowerCase();
-    let match = lWord.match(/<!\b(?:a\.d|a\.m|abbr|adj|adv|al|assn|ave|c|c\.v|ca|dept|dr|e\.g|est|etc|fig|gen|hon|hrs|i\.e|inc|jr|mr|mrs|ms|mt|no|obj|oz|p\.a|p\.m|p\.s|pl|poss|prep|prof|pron|pseud|r\.i\.p|rev|sing|sq|sr|st|stat|syn|trans|v|vb|vs)\.|[.,;:!?]$/)
+    let match = lWord.match(
+      /<!\b(?:a\.d|a\.m|abbr|adj|adv|al|assn|ave|c|c\.v|ca|dept|dr|e\.g|est|etc|fig|gen|hon|hrs|i\.e|inc|jr|mr|mrs|ms|mt|no|obj|oz|p\.a|p\.m|p\.s|pl|poss|prep|prof|pron|pseud|r\.i\.p|rev|sing|sq|sr|st|stat|syn|trans|v|vb|vs)\.|[.,;:!?]$/
+    );
     if (match) {
       lWord = lWord.slice(0, -1);
-    };
+    }
     if (articleDetails.replWordList[lWord]) {
-      if (articleDetails.replWordList[lWord].rule == 'bas') {
-      spacedWords[i] = `<span class="repl-word"><b>${articleDetails.replWordList[lWord].replacement}</b></span>`;
-      continue;
-      };
-      if (articleDetails.replWordList[lWord].rule == 'addbefore') {
-        spacedWords.splice(i, 0, `<span class="repl-word"><b>${articleDetails.replWordList[lWord].replacement}</b></span>`);
+      if (articleDetails.replWordList[lWord].rule == "bas") {
+        spacedWords[
+          i
+        ] = `<span class="repl-word"><b>${articleDetails.replWordList[lWord].replacement}</b></span>`;
+        continue;
+      }
+      if (articleDetails.replWordList[lWord].rule == "addbefore") {
+        spacedWords.splice(
+          i,
+          0,
+          `<span class="repl-word"><b>${articleDetails.replWordList[lWord].replacement}</b></span>`
+        );
         i++;
         continue;
-      };
-    };
-  };
+      }
+    }
+  }
   return spacedWords;
 };
 
@@ -144,10 +159,12 @@ const replaceWords = (spacedWords) => {
 // }
 
 const newzLib = (array, headline) => {
-  document.getElementById("formarea").innerHTML = '';
-  newArticle = array.join(' ');
-  document.getElementById("article").innerHTML = `<h2>${headline}</h2> <br><div id="newart">${newArticle}</div>`;
-  document.getElementById("howitworks").innerHTML = '';
+  document.getElementById("formarea").innerHTML = "";
+  newArticle = array.join(" ");
+  document.getElementById(
+    "article"
+  ).innerHTML = `<h2>${headline}</h2> <br><div id="newart">${newArticle}</div>`;
+  document.getElementById("howitworks").innerHTML = "";
   document.getElementById("subheadings").style.visibility = "hidden";
 };
 
@@ -156,12 +173,15 @@ const nextLib = () => {
   if (count === 10) return endLibs();
   if (firstLib == false) {
     document.getElementById("howitworks").innerHTML = `How does it work?
-      <br>We grabbed another article that <BR> awaits your final edits.<br>Just replace the prompts and hit submit!`
-    };
-  document.getElementById("formarea").innerHTML = 'loading...';
-  document.getElementById("article").innerHTML = '';
+      <br>We grabbed another article that <BR> awaits your final edits.<br>Just replace the prompts and hit submit!`;
+  }
+  document.getElementById("formarea").innerHTML = "loading...";
+  document.getElementById("article").innerHTML = "";
   document.getElementById("subheadings").style.visibility = "visible";
-  discoverReplacements(timesData.response.docs[count].lead_paragraph, articleDetails.headline = timesData.response.docs[count].headline.main);
+  discoverReplacements(
+    timesData.response.docs[count].snippet,
+    (articleDetails.headline = timesData.response.docs[count].headline.main)
+  );
 };
 
 const endLibs = () => {
@@ -172,15 +192,15 @@ const endLibs = () => {
 //new submit button event handlers
 const handler1 = () => {
   firstLib = false;
-  if (submit.innerHTML === 'submit')  {
+  if (submit.innerHTML === "submit") {
     pushElements();
-    submit.innerHTML = 'make a new one!';
+    submit.innerHTML = "make a new one!";
   } else {
-    submit.style.visibility = 'hidden';
-    submit.innerHTML = 'submit';
+    submit.style.visibility = "hidden";
+    submit.innerHTML = "submit";
     nextLib();
-  };
+  }
 };
 
-submit.addEventListener('click', handler1);
+submit.addEventListener("click", handler1);
 newLibs();
