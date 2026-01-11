@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "heroku": "^7.38.2",
     "html2canvas": "^1.0.0-rc.5",
     "html2canvas-proxy": "^1.0.1",
